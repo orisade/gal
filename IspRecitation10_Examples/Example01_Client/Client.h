@@ -9,6 +9,7 @@
 
 #ifndef CLIENT_H
 #define CLIENT_H
+#include "../Shared/HardCodedData.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

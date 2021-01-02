@@ -118,8 +118,8 @@
     <ClCompile Include="..\Shared\messages.c" />
     <ClCompile Include="..\Shared\Socket.c" />
     <ClCompile Include="..\Shared\threads.c" />
+    <ClCompile Include="Client.c" />
     <ClCompile Include="client_main.c" />
-    <ClCompile Include="Socket.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared\HardCodedData.h" />

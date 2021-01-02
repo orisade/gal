@@ -11,9 +11,12 @@
 #define SOCKET_SEND_RECV_TOOLS_H
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
-
-#include <winsock2.h>
+#include "HardCodedData.h"
 #pragma comment(lib, "ws2_32.lib")
+#include <stdio.h>
+#include <string.h>
+#include <winsock2.h>
+#include "messages.h"
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 

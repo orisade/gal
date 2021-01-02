@@ -5,9 +5,8 @@ Authors:Amit Herman Raz Rajwan
 
 */
 
-
 #include "threads.h"
-#include <stdio.h>
+
 
 
 

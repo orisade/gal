@@ -9,7 +9,12 @@
 
 #ifndef SERVER_H
 #define SERVER_H
-
+#include "../Shared/HardCodedData.h"
+#include <stdio.h>
+#include <string.h>
+#include <winsock2.h>
+#include "Socket.h"
+#include "threads.h"
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
 void MainServer();

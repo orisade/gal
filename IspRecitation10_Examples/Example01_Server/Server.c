@@ -7,14 +7,9 @@ Last updated by Amnon Drory, Winter 2011.
  */
  /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include "Server.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <winsock2.h>
-#include "HardCodedData.h"
-#include "Socket.h"
-#include "messages.h"
+
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 

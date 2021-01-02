@@ -1,183 +1,147 @@
-/*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
-/* 
- This file was written for instruction purposes for the 
- course "Introduction to Systems Programming" at Tel-Aviv
- University, School of Electrical Engineering.
-Last updated by Amnon Drory, Winter 2011.
- */
-/*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-#include <stdio.h>
-#include <string.h>
-#include <winsock2.h>
-#include "messages.h"
-#include "../Shared/HardCodedData.h"
-#include "SocketExampleShared.h"
 #include "Socket.h"
+int Init_WinSocket(WSADATA* lp_wsa_data) {
 
-/*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
+	int result;
 
-SOCKET m_socket;
-
-/*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
-
-//Reading data coming from the server
-static DWORD RecvDataThread(void)
-{
-	TransferResult_t RecvRes;
-
-	while (1) 
-	{
-		char *AcceptedStr = NULL;
-		RecvRes = ReceiveString( &AcceptedStr , m_socket );
-
-		if ( RecvRes == TRNS_FAILED )
-		{
-			printf("Socket error while trying to write data to socket\n");
-			free(AcceptedStr);
-			return 0x555;
-		}
-		else if ( RecvRes == TRNS_DISCONNECTED )
-		{
-			printf("Server closed connection. Bye!\n");
-			free(AcceptedStr);
-			return 0x555;
-		}
-		else
-		{
-			printf("%s\n",AcceptedStr);
-		}
-		
-		free(AcceptedStr);
+	// Initialize Winsock
+	result = WSAStartup(MAKEWORD(2, 2), lp_wsa_data);
+	if (result != 0) {
+		printf("WSAStartup failed: %d\n", result);
+		return 0;
 	}
 
-	return 0;
+	return 1;
+}
+
+
+int SocketGetLastError() {
+	return WSAGetLastError();
+}
+
+SOCKET createSocket() {
+	return socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
 }
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-//Sending data to the server
-static DWORD SendDataThread(void)
+TransferResult_t SendString(const char* Str, SOCKET sd)
 {
-	char SendStr[256];
+	/* Send the the request to the server on socket sd */
+	int TotalStringSizeInBytes;
 	TransferResult_t SendRes;
 
-	while (1) 
-	{
-		gets_s(SendStr, sizeof(SendStr)); //Reading a string from the keyboard
-		message* user_mes =process_Message(SendStr,0 ); //TO-DO DEFINE IS SERVER; 
-		if ( STRINGS_ARE_EQUAL(SendStr,"quit") ) 
-			return 0x555; //"quit" signals an exit from the client side
-		SendRes = SendString( SendStr, m_socket);
-		if ( SendRes == TRNS_FAILED ) 
-		{	
-			printf("Socket error while trying to write data to socket\n");
-			free(user_mes);
-			return 0x555;
-		}
-	free(user_mes);
-	}
+	/* The request is sent in two parts. First the Length of the string (stored in
+	   an int variable ), then the string itself. */
+
+	TotalStringSizeInBytes = (int)(strlen(Str) + 1); // terminating zero also sent	
+
+	SendRes = SendBuffer(
+		(const char*)(&TotalStringSizeInBytes),
+		(int)(sizeof(TotalStringSizeInBytes)), // sizeof(int) 
+		sd);
+
+	if (SendRes != TRNS_SUCCEEDED) return SendRes;
+
+	SendRes = SendBuffer(
+		(const char*)(Str),
+		(int)(TotalStringSizeInBytes),
+		sd);
+
+	return SendRes;
 }
-
-/*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
-
-void MainClient()
+TransferResult_t ReceiveString(char** OutputStrPtr, SOCKET sd)
 {
-	SOCKADDR_IN clientService;
-	HANDLE hThread[2];
-	 
-    // Initialize Winsock.
-    WSADATA wsaData; //Create a WSADATA object called wsaData.
-	int ret_val = SUCCESS;
-	int temp_ret_val = 0; 
-	temp_ret_val = WSAStartup( MAKEWORD(2, 2), &wsaData );
-	if (ret_val != NO_ERROR)
-	{
-		ret_val = temp_ret_val;
-		printf("Error at WSAStartup()\n");
-		goto clean1; 
-	}
-    m_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-	// Check for errors to ensure that the socket is a valid socket.
-    if ( m_socket == INVALID_SOCKET ) {
-		ret_val = m_socket;
-        printf( "Error at socket(): %ld\n", WSAGetLastError() );
-		goto clean1; 
-    }
-    //Create a sockaddr_in object clientService and set  values.
-    clientService.sin_family = AF_INET;
-	clientService.sin_addr.s_addr = inet_addr( SERVER_ADDRESS_STR ); //Setting the IP address to connect to
-    clientService.sin_port = htons( SERVER_PORT ); //Setting the port to connect to.
-    // Call the connect function, passing the created socket and the sockaddr_in structure as parameters. 
-	// Check for general errors.
-	if ( connect( m_socket, (SOCKADDR*) &clientService, sizeof(clientService) ) == SOCKET_ERROR) {
-		ret_val= WSAGetLastError();
-	/*	
-		printf("Failed to Connect to server on %d : %d", SERVER_ADDRESS_STR, SERVER_PORT);
-		printf("Choose what to do next:");
-		printf("1. Try to reconnect");
-		printf("2. Exit");*/
-		goto clean1;
-    }
-	printf("Connected to server on %d : %d", SERVER_ADDRESS_STR, SERVER_PORT);
-	printf("please enter user name: ");
-	hThread[0]=CreateThread(
-		NULL,
-		0,
-		(LPTHREAD_START_ROUTINE) SendDataThread,
-		NULL,
-		0,
-		NULL
-	);
-	if (hThread[0] == NULL)
-	{
-		printf("cannot open send Thread");
-		WSACleanup();
-		return;
-	}
-	hThread[1]=CreateThread(
-		NULL,
-		0,
-		(LPTHREAD_START_ROUTINE) RecvDataThread,
-		NULL,
-		0,
-		NULL
-	);
-	if (hThread[1] == NULL)
-	{
-		printf("cannot open recv Thread");
-		WSACleanup();
-		return;
-	}
-	//hThread[2] = CreateThread(
-	//	NULL,
-	//	0,
-	//	user_interface,
-	//	hThread,
-	//	0,
-	//	NULL
-	//);
-	//if (hThread[2] == NULL)
-	//{
-	//	printf("cannot open user interface Thread.\n");
-	//	WSACleanup();
-	//	return;
-	//} 
+	/* Recv the the request to the server on socket sd */
+	int TotalStringSizeInBytes;
+	TransferResult_t RecvRes;
+	char* StrBuffer = NULL;
 
-	WaitForMultipleObjects(2,hThread,FALSE,INFINITE);
+	if ((OutputStrPtr == NULL) || (*OutputStrPtr != NULL))
+	{
+		printf("The first input to ReceiveString() must be "
+			"a pointer to a char pointer that is initialized to NULL. For example:\n"
+			"\tchar* Buffer = NULL;\n"
+			"\tReceiveString( &Buffer, ___ )\n");
+		return TRNS_FAILED;
+	}
 
-	TerminateThread(hThread[0],0x555);
-	TerminateThread(hThread[1],0x555);
+	/* The request is received in two parts. First the Length of the string (stored in
+	   an int variable ), then the string itself. */
 
-	CloseHandle(hThread[0]);
-	CloseHandle(hThread[1]);
-	
-	shutdown(m_socket, SD_SEND);
-	closesocket(m_socket);
-clean1:	
-	WSACleanup();
-	return ret_val;
+	RecvRes = ReceiveBuffer(
+		(char*)(&TotalStringSizeInBytes),
+		(int)(sizeof(TotalStringSizeInBytes)), // 4 bytes
+		sd);
+
+	if (RecvRes != TRNS_SUCCEEDED) return RecvRes;
+
+	StrBuffer = (char*)malloc(TotalStringSizeInBytes * sizeof(char));
+
+	if (StrBuffer == NULL)
+		return TRNS_FAILED;
+
+	RecvRes = ReceiveBuffer(
+		(char*)(StrBuffer),
+		(int)(TotalStringSizeInBytes),
+		sd);
+
+	if (RecvRes == TRNS_SUCCEEDED)
+	{
+		*OutputStrPtr = StrBuffer;
+	}
+	else
+	{
+		free(StrBuffer);
+	}
+
+	return RecvRes;
 }
+TransferResult_t ReceiveBuffer(char* OutputBuffer, int BytesToReceive, SOCKET sd)
+{
+	char* CurPlacePtr = OutputBuffer;
+	int BytesJustTransferred;
+	int RemainingBytesToReceive = BytesToReceive;
 
+	while (RemainingBytesToReceive > 0)
+	{
+		/* send does not guarantee that the entire message is sent */
+		BytesJustTransferred = recv(sd, CurPlacePtr, RemainingBytesToReceive, 0);
+		if (BytesJustTransferred == SOCKET_ERROR)
+		{
+			printf("recv() failed, error %d\n", WSAGetLastError());
+			return TRNS_FAILED;
+		}
+		else if (BytesJustTransferred == 0)
+			return TRNS_DISCONNECTED; // recv() returns zero if connection was gracefully disconnected.
+
+		RemainingBytesToReceive -= BytesJustTransferred;
+		CurPlacePtr += BytesJustTransferred; // <ISP> pointer arithmetic
+	}
+
+	return TRNS_SUCCEEDED;
+}
+TransferResult_t SendBuffer(const char* Buffer, int BytesToSend, SOCKET sd)
+{
+	const char* CurPlacePtr = Buffer;
+	int BytesTransferred;
+	int RemainingBytesToSend = BytesToSend;
+
+	while (RemainingBytesToSend > 0)
+	{
+		/* send does not guarantee that the entire message is sent */
+		BytesTransferred = send(sd, CurPlacePtr, RemainingBytesToSend, 0);
+		if (BytesTransferred == SOCKET_ERROR)
+		{
+			printf("send() failed, error %d\n", WSAGetLastError());
+			return TRNS_FAILED;
+		}
+
+		RemainingBytesToSend -= BytesTransferred;
+		CurPlacePtr += BytesTransferred; // <ISP> pointer arithmetic
+	}
+
+	return TRNS_SUCCEEDED;
+}

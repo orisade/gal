@@ -5,11 +5,27 @@
 *	messages module implementation
 */
 
-#define _CRT_SECURE_NO_WARNINGS
-#include <string.h>
+
 #include "messages.h"
-#include <stdio.h>
-#include <stdlib.h>
+
+const char* server_messages[] = { "SERVER_MAIN_MENU",
+								"SERVER_APPROVED",
+								"SERVER_DENIED",
+								"SERVER_INVITE",
+								"SERVER_SETUP_REQUSET",
+								"SERVER_PLAYER_MOVE_REQUEST",
+								"SERVER_GAME_RESULTS",
+								"SERVER_WIN",
+								"SERVER_DRAW",
+								"SERVER_NO_OPPONENTS",
+								"SERVER_OPPONENT_QUIT" }; //extern because client.c uses this too
+
+
+const char* client_messges[] = { "CLIENT_REQUEST",
+								"CLIENT_VERSUS",
+								"CLIENT_SETUP",
+								"CLIENT_PLAYER_MOVE",
+								"CLIENT_DISCONNECT" };
 
 #define MAX_MESSAGE_TYPE_SIZE 19 //according to to what we are given, that is 18 characters + null terminator
 

@@ -7,10 +7,14 @@ Authors:Amit Herman Raz Rajwan
 
 #ifndef _THREADS_H_
 #define _THREADS_H_
+#include "HardCodedData.h"
 #include <windows.h>
+#include <stdio.h>
 
 //Shortcut for ReleaseMutex
 #define release ReleaseMutex
+
+
 
 HANDLE CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
 	LPDWORD p_thread_id, LPVOID lpParam);
