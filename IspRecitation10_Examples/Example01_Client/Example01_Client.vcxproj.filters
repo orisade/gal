@@ -24,9 +24,6 @@
     <ClCompile Include="client_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\SocketSendRecvTools.c">
-      <Filter>Shared Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Shared\threads.c">
       <Filter>Shared Source Files</Filter>
     </ClCompile>
@@ -35,6 +32,9 @@
     </ClCompile>
     <ClCompile Include="Socket.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Socket.c">
+      <Filter>Shared Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

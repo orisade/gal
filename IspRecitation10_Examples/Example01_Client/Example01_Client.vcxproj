@@ -116,7 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Shared\messages.c" />
-    <ClCompile Include="..\Shared\SocketSendRecvTools.c" />
+    <ClCompile Include="..\Shared\Socket.c" />
     <ClCompile Include="..\Shared\threads.c" />
     <ClCompile Include="client_main.c" />
     <ClCompile Include="Socket.c" />
