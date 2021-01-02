@@ -1,5 +1,5 @@
 
-#include "SocketExampleClient.h"
+#include "Client.h"
 
 int main()
 {

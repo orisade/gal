@@ -7,8 +7,8 @@
 */
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-#ifndef SOCKET_EXAMPLE_SERVER_H
-#define SOCKET_EXAMPLE_SERVER_H
+#ifndef SERVER_H
+#define SERVER_H
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 

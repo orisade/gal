@@ -47,7 +47,7 @@ int send_message_server(message* lp_message, SOCKET s_target) {
 
 /*	Utility functions that support other function for general things	*/
 int get_message_code(const char* message_type, int is_server) {
-	int i,len;
+	int i, len;
 	char** lut;
 	if (is_server)
 	{
@@ -86,7 +86,7 @@ message* process_Message(const char* message_text, int is_server) {
 	}*/
 
 	if (message_type_code >= 0 || lp_params)
-			proccessed_message->message_arguments = (lp_params)+1;
+		proccessed_message->message_arguments = (lp_params)+1;
 	else {
 		proccessed_message->message_arguments = NULL;
 		proccessed_message->message_argument_length = 0;

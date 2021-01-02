@@ -115,18 +115,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Example01_Client\Socket.c" />
     <ClCompile Include="..\Shared\messages.c" />
-    <ClCompile Include="..\Shared\SocketSendRecvTools.c" />
     <ClCompile Include="..\Shared\threads.c" />
     <ClCompile Include="server_main.c" />
-    <ClCompile Include="SocketExampleServer.c" />
+    <ClCompile Include="Server.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shared\HardCodedData.h" />
     <ClInclude Include="..\Shared\messages.h" />
-    <ClInclude Include="..\Shared\SocketExampleShared.h" />
-    <ClInclude Include="..\Shared\SocketSendRecvTools.h" />
+    <ClInclude Include="..\Shared\Socket.h" />
     <ClInclude Include="..\Shared\threads.h" />
-    <ClInclude Include="SocketExampleServer.h" />
+    <ClInclude Include="Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

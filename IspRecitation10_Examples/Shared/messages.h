@@ -18,20 +18,20 @@ const char* server_messages[] = { "SERVER_MAIN_MENU",
 								"SERVER_WIN",
 								"SERVER_DRAW",
 								"SERVER_NO_OPPONENTS",
-								"SERVER_OPPONENT_QUIT"}; //extern because client.c uses this too
+								"SERVER_OPPONENT_QUIT" }; //extern because client.c uses this too
 
 #define CLIENT_MESSAGES_LEN 5
 const char* client_messges[] = { "CLIENT_REQUEST",
 								"CLIENT_VERSUS",
 								"CLIENT_SETUP",
 								"CLIENT_PLAYER_MOVE",
-								"CLIENT_DISCONNECT"};
+								"CLIENT_DISCONNECT" };
 
 typedef struct message {
 
 	int message_type;
 	int message_argument_length;
-	char * message_arguments;
+	char* message_arguments;
 
 }message;
 

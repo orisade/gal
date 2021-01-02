@@ -7,8 +7,8 @@
 */
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-#ifndef SOCKET_EXAMPLE_CLIENT_H
-#define SOCKET_EXAMPLE_CLIENT_H
+#ifndef CLIENT_H
+#define CLIENT_H
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

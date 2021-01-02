@@ -24,9 +24,6 @@
     <ClCompile Include="client_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SocketExampleClient.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Shared\SocketSendRecvTools.c">
       <Filter>Shared Source Files</Filter>
     </ClCompile>
@@ -36,22 +33,25 @@
     <ClCompile Include="..\Shared\messages.c">
       <Filter>Shared Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Socket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SocketExampleClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\SocketExampleShared.h">
-      <Filter>Shared Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\SocketSendRecvTools.h">
-      <Filter>Shared Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Shared\threads.h">
       <Filter>Shared Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\messages.h">
       <Filter>Shared Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\HardCodedData.h">
+      <Filter>Shared Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Socket.h">
+      <Filter>Shared Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
