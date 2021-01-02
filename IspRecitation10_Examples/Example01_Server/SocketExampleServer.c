@@ -285,16 +285,10 @@ static DWORD ServiceThread( SOCKET *t_socket )
 		{
 			printf("Got string : %s\n", AcceptedStr);
 			message* lp_message = NULL;
-			lp_message = process_Message(AcceptedStr);
-			if (lp_message != NULL) {
-				if (exec_protocol_server(lp_message, *sender, *other, sock_num) == 0) {
-					free(AcceptedStr);
-					delete_message(lp_message); //free memory
-					return 1;
-				}
-			}
-			delete_message(lp_message);
-			
+			lp_message = process_Message(AcceptedStr, 1);
+			//TransferResult_t SendRes;
+			//SendRes = SendString(AcceptedStr, *t_socket);
+			//TODO - check sending result	
 		}
 
 		//After reading a single line, checking to see what to do with it
