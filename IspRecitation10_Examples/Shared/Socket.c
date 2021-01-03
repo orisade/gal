@@ -145,3 +145,20 @@ TransferResult_t SendBuffer(const char* Buffer, int BytesToSend, SOCKET sd)
 
 	return TRNS_SUCCEEDED;
 }
+
+CloseSocketGracefullySender(SOCKET AcceptSocket)
+{
+	shutdown(AcceptSocket, SD_SEND);
+	TransferResult_t RecvRes;
+	char* AcceptedStr = NULL;
+	RecvRes = ReceiveString(&AcceptedStr, AcceptSocket);
+	closesocket(AcceptSocket); //Closing the socket, dropping the connection.
+}
+CloseSocketGracefullyReciver(SOCKET AcceptSocket)
+{
+	char* AcceptedStr = NULL;
+	TransferResult_t RecvRes;
+	RecvRes = ReceiveString(&AcceptedStr, AcceptSocket);
+	shutdown(AcceptSocket, SD_SEND);	
+	closesocket(AcceptSocket); //Closing the socket, dropping the connection.
+}

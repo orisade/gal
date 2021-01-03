@@ -32,8 +32,9 @@ static DWORD ServiceThread(SOCKET* t_socket);
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-void MainServer()
+void MainServer(int port )
 {
+
 	int Ind;
 	int Loop;
 	SOCKET MainSocket = INVALID_SOCKET;
@@ -135,12 +136,8 @@ void MainServer()
 		if (Ind == NUM_OF_WORKER_THREADS) //no slot is available
 		{
 			printf("No slots available for client, dropping the connection.\n");
-			shutdown(AcceptSocket, SD_SEND);
-			TransferResult_t RecvRes;
-			char* AcceptedStr = NULL;
-			RecvRes = ReceiveString(&AcceptedStr, AcceptSocket);
-			printf("-%s-\n", AcceptedStr);
-			closesocket(AcceptSocket); //Closing the socket, dropping the connection.
+	
+			
 		}
 		else
 		{
@@ -204,7 +201,8 @@ static int FindFirstUnusedThreadSlot()
 
 static void CleanupWorkerThreads()
 {
-	WaitThreads(2, ThreadHandles, FALSE);
+
+	WaitForMultipleObjectsWrap(2, ThreadHandles, INFINITE, FALSE);
 	//
 	int Ind;
 

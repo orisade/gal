@@ -85,7 +85,8 @@ TransferResult_t ReceiveBuffer( char* OutputBuffer, int RemainingBytesToReceive,
  */ 
 TransferResult_t ReceiveString( char** OutputStrPtr, SOCKET sd );
 
-
+CloseSocketGracefullySender(SOCKET AcceptSocket);
+CloseSocketGracefullyReciver(SOCKET AcceptSocket);
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
 #endif // SOCKET_SEND_RECV_TOOLS_H

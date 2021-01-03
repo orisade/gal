@@ -24,23 +24,9 @@ HANDLE CreateThreadSimple(LPTHREAD_START_ROUTINE p_start_routine,
 		p_thread_id);  /*  returns the thread identifier */
 }
 
-HANDLE CreateMutexSimple(LPCSTR str_mutex_name)
-{
-	return CreateMutex(NULL,0, str_mutex_name);
-}
 
-DWORD WaitThreads(int N, HANDLE thread_handles[],BOOL all){
-	DWORD wait_code;
-	wait_code = WaitForMultipleObjects(N, thread_handles, all, INFINITE);
-	return wait_code;
-}
 
-DWORD WaitMutex(HANDLE h_mutex)
-{
-	DWORD wait_code;
-	wait_code = WaitForSingleObject(h_mutex, INFINITE);
-	return wait_code;
-}
+
 
 
 int Init_Threads(int N, LPTHREAD_START_ROUTINE p_start_routine,
@@ -85,3 +71,124 @@ void KillThreads(DWORD code1, DWORD code2, HANDLE h_Threads[]) {
 		TerminateThread(h_Threads[1], 0);
 
 }
+
+int  create_event_simple(HANDLE * event )// create event
+{
+	HANDLE event_handle;
+	DWORD last_error;
+
+	static const LPSECURITY_ATTRIBUTES P_SECURITY_ATTRIBUTES = NULL;
+	static const BOOL IS_MANUAL_RESET = TRUE; /* Manual-reset event */
+	static const BOOL IS_INITIALLY_SET = FALSE;
+	/* Get handle to event by name. If the event doesn't exist, create it */
+	event_handle = CreateEvent(
+		P_SECURITY_ATTRIBUTES, /* default security attributes */
+		IS_MANUAL_RESET,       /* manual-reset event */
+		IS_INITIALLY_SET,      /* initial state is non-signaled */
+		NULL);         /* name */
+	/* Check if succeeded and handle errors */
+
+	if (event_handle == NULL)
+	{
+		printf("problem with create event,error code %d", GetLastError());
+		return PROBLEM_CREATE_EVENT;
+	}
+	*event = event_handle;
+	return SUCCESS; 
+
+}
+
+
+
+int WaitForSingleObjectWrap(HANDLE handle, uli time_ms)
+{
+	int wait_code = WaitForSingleObject(handle, time_ms);
+	if (wait_code != WAIT_OBJECT_0)
+	{
+		printf("problem with WaitForSingleObject ,error code is %d \n\n", GetLastError());
+		return TIME_OUT_THREAD;
+	}
+	return SUCCESS;
+}
+
+int WaitForMultipleObjectsWrap(uli num_of_threads, HANDLE* handle_arr, uli time_ms, BOOL bWaitAll)
+{
+
+	int wait_code = WaitForMultipleObjects(num_of_threads, handle_arr, TRUE, INFINITE);
+	if (WAIT_OBJECT_0 != wait_code)
+	{
+		printf("problem with WaitForMultipleObject ,error code is %d \n\n", GetLastError());
+		return TIME_OUT_THREAD;
+	}
+	return SUCCESS;
+}
+
+int CreateSemphoreWrap(int max_count, HANDLE* OUT semphore, int initialcount)
+{
+	*semphore = CreateSemaphoreA(
+		NULL,	/* Default security attributes */
+		initialcount,		/* Initial Count - all slots are empty */
+		max_count,		/* Maximum Count */
+		NULL);
+
+	if (*semphore == NULL)
+	{
+		printf("problem with create semphore,error code %d", GetLastError());
+		return PROBLEM_CREATE_SEMPHORE;
+	}
+	return SUCCESS;
+}
+
+int CreateMutexWrap(BOOL bInitialOwner, HANDLE* OUT mutex)
+{
+
+	*mutex = CreateMutexA(
+		NULL,	/* Default security attributes */
+		bInitialOwner,		/* Set if the creator of the mutex is lock it after it create it.  */
+		NULL);
+
+	if (*mutex == NULL)
+	{
+		printf("problem with create mutex,error code %d", GetLastError());
+		return PROBLEM_CREATE_MUTEX;
+	}
+	return SUCCESS;
+}
+
+int OpenSemphoreWrap(HANDLE* OUT semphore, const char* name)
+{
+	*semphore = OpenSemaphoreA(
+		SYNCHRONIZE,
+		FALSE,
+		name);
+
+	if (*semphore == NULL)
+	{
+		printf("problem with OPEN semphore,error code %d", GetLastError());
+		return PROBLEM_OPEN_SEMPHORE;
+	}
+	return SUCCESS;
+}
+
+int ReleaseSemphoreWrap(HANDLE semphore, int lReleaseCount)
+{
+	int wait_code = ReleaseSemaphore(semphore, lReleaseCount, NULL);
+	if (wait_code == 0)
+	{
+		printf("problem with realease semphore ,error code%d", GetLastError());
+		return ERROR_RELEASE_SEMPHORE;
+	}
+	return SUCCESS;
+}
+
+int ReleaseMutexeWrap(HANDLE mutex)
+{
+	int wait_code = ReleaseMutex(mutex);
+	if (wait_code == 0)
+	{
+		printf("problem with realease Mutex,error code  %d", GetLastError());
+		return ERROR_RELEASE_MUTEX;
+	}
+	return SUCCESS;
+}
+

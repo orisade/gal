@@ -15,14 +15,20 @@ Last updated by Amnon Drory, Winter 2011.
 #include "messages.h"
 #include "../Shared/HardCodedData.h"
 #include "Socket.h"
+#include "threads.h"
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
-
+HANDLE Send_event;
 SOCKET m_socket;
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
 //Reading data coming from the server
+
+static DWORD UIThread(void)
+{
+
+}
 static DWORD RecvDataThread(void)
 {
 	TransferResult_t RecvRes;
@@ -82,19 +88,21 @@ static DWORD SendDataThread(void)
 
 /*oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO*/
 
-void MainClient()
+void MainClient(int argc ,char *argv [] )
 {
+	//int port = atoi(argv[1]);
+
+	int ret_val = create_event_simple(&Send_event);
+	if (ret_val != SUCCESS)
+		return ret_val;
 	SOCKADDR_IN clientService;
-	HANDLE hThread[2];
+	HANDLE hThread[3];
 
 	// Initialize Winsock.
 	WSADATA wsaData; //Create a WSADATA object called wsaData.
-	int ret_val = SUCCESS;
-	int temp_ret_val = 0;
-	temp_ret_val = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	ret_val = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (ret_val != NO_ERROR)
 	{
-		ret_val = temp_ret_val;
 		printf("Error at WSAStartup()\n");
 		goto clean1;
 	}
@@ -122,61 +130,42 @@ void MainClient()
 	}
 	printf("Connected to server on %d : %d", SERVER_ADDRESS_STR, SERVER_PORT);
 	printf("please enter user name: ");
-	hThread[0] = CreateThread(
-		NULL,
-		0,
-		(LPTHREAD_START_ROUTINE)SendDataThread,
-		NULL,
-		0,
-		NULL
-	);
+	hThread[0] = CreateThreadSimple((LPTHREAD_START_ROUTINE)SendDataThread, NULL, NULL);
 	if (hThread[0] == NULL)
 	{
 		printf("cannot open send Thread");
 		WSACleanup();
-		return;
+		goto clean2;
 	}
-	hThread[1] = CreateThread(
-		NULL,
-		0,
-		(LPTHREAD_START_ROUTINE)RecvDataThread,
-		NULL,
-		0,
-		NULL
-	);
+	hThread[1] = CreateThreadSimple((LPTHREAD_START_ROUTINE)RecvDataThread,NULL,NULL);
 	if (hThread[1] == NULL)
 	{
 		printf("cannot open recv Thread");
-		WSACleanup();
-		return;
+		goto clean2;
 	}
-	//hThread[2] = CreateThread(
-	//	NULL,
-	//	0,
-	//	user_interface,
-	//	hThread,
-	//	0,
-	//	NULL
-	//);
-	//if (hThread[2] == NULL)
-	//{
-	//	printf("cannot open user interface Thread.\n");
-	//	WSACleanup();
-	//	return;
-	//} 
-
-	WaitForMultipleObjects(2, hThread, FALSE, INFINITE);
+	hThread[2] = CreateThreadSimple((LPTHREAD_START_ROUTINE)UIThread, NULL, NULL);
+	if (hThread[2] == NULL)
+	{
+		printf("cannot open user interface thread.\n");
+		goto clean2;
+	} 
+	ret_val=WaitForMultipleObjectsWrap(3, hThread, INFINITE, FALSE);
+	if (ret_val != SUCCESS)
+		goto clean3;
+	ret_val = SUCCESS;
+clean3:
 
 	TerminateThread(hThread[0], 0x555);
 	TerminateThread(hThread[1], 0x555);
-
+	TerminateThread(hThread[2], 0x555);
 	CloseHandle(hThread[0]);
 	CloseHandle(hThread[1]);
-
-	shutdown(m_socket, SD_SEND);
-	closesocket(m_socket);
+	CloseHandle(hThread[2]);
+clean2:
+	CloseSocketGracefullySender(m_socket);
 clean1:
 	WSACleanup();
+	return ret_val;
 	//return ret_val;
 }
 
